@@ -113,4 +113,39 @@ def main(page: ft.Page):
         )
     )
 
+    # Variables pour redimensionner l'image
+    new_width = ft.TextField(label="Nouvelle Largeur", value="400", keyboard_type=ft.KeyboardType.NUMBER)
+    new_height = ft.TextField(label="Nouvelle Hauteur", value="400", keyboard_type=ft.KeyboardType.NUMBER)
+
+    # Action pour le bouton de redimensionnement
+    def resize_image(e):
+        nonlocal current_image_path
+        if current_image_path is None:
+            t.value = "Veuillez d'abord sélectionner une image."
+            page.update()
+            return
+
+        try:
+            new_w = int(new_width.value)
+            new_h = int(new_height.value)
+            if new_w <= 0 or new_h <= 0:
+                raise ValueError("La largeur et la hauteur doivent être des entiers positifs.")
+
+            resized_path = os.path.join(temp_path, "resized_" + os.path.basename(current_image_path))
+            with Image.open(current_image_path) as img:
+                img = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+                img.save(resized_path)
+
+            displayed_image.src = resized_path
+            t.value = f"Image redimensionnée à {new_w}x{new_h} pixels."
+            page.update()
+        except ValueError as e:
+            t.value = f"Erreur : {str(e)}"
+            page.update()
+
+    # Ajouter le bouton de redimensionnement et les champs de texte pour la taille
+    boutons_column.controls.append(ft.ElevatedButton(text="Redimensionner", on_click=resize_image))
+    boutons_column.controls.append(new_width)
+    boutons_column.controls.append(new_height)
+
 ft.app(target=main)
