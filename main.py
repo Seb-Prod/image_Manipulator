@@ -23,7 +23,7 @@ def main(page: ft.Page):
 
     # Image affichée
     displayed_image = ft.Image(
-        width=400, height=400, fit=ft.ImageFit.CONTAIN
+        width=500, height=500, fit=ft.ImageFit.CONTAIN
     )
 
     # Fonction pour gérer la sélection exclusive des cases à cocher
