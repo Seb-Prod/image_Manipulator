@@ -95,6 +95,8 @@ def main(page: ft.Page):
         infoImage.ext = e.control.data.ext
         paramModif.largeur = modif.getTailleInitiale(infoImage).largeur
         paramModif.hauteur = modif.getTailleInitiale(infoImage).hauteur
+        paramModif.nb = False
+        paramModif.rotation = 0
         new_width.value = paramModif.largeur
         new_height.value = paramModif.hauteur
         
