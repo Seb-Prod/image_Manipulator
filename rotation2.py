@@ -17,7 +17,7 @@ def rotate_image_with_pil(infoImage:liste_fichier.Image, angle:int):
         print(infoImage)
         with Image.open(os.path.join(infoImage.rep, infoImage.nom)) as img:
             rotated_img = img.rotate(angle, expand=True)
-
+            
             # Enregistrer l'image tournée
             rotated_img.save(os.path.join(os.getcwd(), "temp" + infoImage.ext))
 

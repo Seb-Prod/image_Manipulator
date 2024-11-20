@@ -5,24 +5,53 @@ import webbrowser
 import liste_fichier
 import bouton
 import rotation2
+import modificationImage as modif
 
 infoImage: liste_fichier.Image = liste_fichier.Image(rep="", nom="", ext="")
-
+paramModif: modif.ParamModif = modif.ParamModif(nb=False, rotation=0, largeur=0, hauteur=0)
 
 
 def main(page: ft.Page):
     page.title = "Image Manipulator LITE"
-    
-    def rotation(e):
-        rotation2.rotate_image_with_pil(infoImage, 90)
-        displayed_image.src = os.path.join(os.getcwd(), "temp" + infoImage.ext)
+
+    def actionCheckBox(e):
+        print(paramModif)
+        if e.data == "true":
+            paramModif.nb = True
+        else:
+            paramModif.nb = False
+
+        displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
+        page.update()
+        
+    def actionRotationDroite(e):
+        paramModif.largeur = int(new_height.value)
+        paramModif.hauteur = int(new_width.value)
+
+        new_width.value = paramModif.largeur
+        new_height.value = paramModif.hauteur
+
+        paramModif.rotation = paramModif.rotation - 90
+        displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
         page.update()
 
-    # Fonction pour convertir une image en noir et blanc
-    def convertir_nb(image_path, output_path):
-        img = Image.open(image_path)
-        img = img.convert("L")  # Convertir en niveaux de gris
-        img.save(output_path)  # Sauvegarder l'image convertie
+    def actionRotationGauche(e):
+        paramModif.largeur = int(new_height.value)
+        paramModif.hauteur = int(new_width.value)
+
+        new_width.value = paramModif.largeur
+        new_height.value = paramModif.hauteur
+
+        paramModif.rotation = paramModif.rotation - 90
+        displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
+        page.update()
+
+    def actionChangeTaille(e):
+        paramModif.largeur = int(new_width.value)
+        paramModif.hauteur = int(new_height.value)
+        displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
+        page.update()
+
 
     # Variables globales
     current_image_path = None
@@ -58,17 +87,18 @@ def main(page: ft.Page):
         container_boutons.visible = True
         selected_image = os.path.join(e.control.data.rep, e.control.data.nom)
         current_image_path = selected_image
+        displayed_image.src = selected_image
+
+        checkboxNoirEtBlanc.value = False
         infoImage.nom = e.control.data.nom
         infoImage.rep = e.control.data.rep
         infoImage.ext = e.control.data.ext
-
-        # Appliquer le mode actuel à l'image sélectionnée
-        if mode_nb:  # Noir et Blanc
-            bw_path = os.path.join(temp_path, "bw_" + os.path.basename(selected_image))
-            convertir_nb(selected_image, bw_path)
-            displayed_image.src = bw_path
-        else:  # Couleur
-            displayed_image.src = selected_image
+        paramModif.largeur = modif.getTailleInitiale(infoImage).largeur
+        paramModif.hauteur = modif.getTailleInitiale(infoImage).hauteur
+        new_width.value = paramModif.largeur
+        new_height.value = paramModif.hauteur
+        
+        displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
 
         t.value = f"Image sélectionnée : {os.path.basename(current_image_path)}"
         page.update()
@@ -116,6 +146,7 @@ def main(page: ft.Page):
     t = ft.Text()
 
     # Bouton pour basculer le mode Noir et Blanc / Couleur
+    checkboxNoirEtBlanc = ft.Checkbox(label="Noire et blanc", value=False, on_change=actionCheckBox)
     mode_button = ft.ElevatedButton(text="Passer en Noir et Blanc", on_click=toggle_mode)
 
     # Champs pour entrer les dimensions de redimensionnement (sans valeurs par défaut)
@@ -123,14 +154,19 @@ def main(page: ft.Page):
     new_height = ft.TextField(label="Hauteur (max 1080)", keyboard_type=ft.KeyboardType.NUMBER)
 
     # Bouton pour redimensionner l'image
-    resize_button = ft.ElevatedButton(text="Redimensionner", on_click=resize_image)
+    resize_button = ft.ElevatedButton(text="Redimensionner", on_click=actionChangeTaille)
     
     # Bouton pour faire une rotation de l'image
-    rotate_button = ft.ElevatedButton(text="Rotation", on_click=rotation)
+    rotate_button_right = bouton.monBouton(actionRotationDroite, ft.icons.ROTATE_RIGHT)
+    rotate_button_left = bouton.monBouton(actionRotationGauche, ft.icons.ROTATE_LEFT)
+    
+    #ligne des boutons de ratation
+    ligneBoutonRotation = ft.Row(controls=[rotate_button_left, rotate_button_right])
+
 
     # Colonne des contrôles
     boutons_column = ft.Column(
-        controls=[mode_button, new_width, new_height, resize_button, rotate_button, t],
+        controls=[mode_button,checkboxNoirEtBlanc, new_width, new_height, resize_button, ligneBoutonRotation, t],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER
     )
@@ -166,7 +202,7 @@ def main(page: ft.Page):
 
     # Bouton qui affiche le popup du choix du répertoire
     bt = ft.ElevatedButton("Choisir le répertoire", on_click=lambda _: file_picker.get_directory_path())
-
+    
     # Ligne avec le bouton
     ligneBoutonsFichier = ft.Row([bt, bouton.monBouton(cacheListe, ft.icons.CLOSE)])
     blocGestionFichier = ft.Column([ligneBoutonsFichier, liste])
