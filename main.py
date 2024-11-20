@@ -120,10 +120,13 @@ def main(page: ft.Page):
 
     # Bouton pour redimensionner l'image
     resize_button = ft.ElevatedButton(text="Redimensionner", on_click=resize_image)
+    
+    # Bouton pour faire une rotation de l'image
+    rotate_button = ft.ElevatedButton(text="Rotation", on_click=rotation)
 
     # Colonne des contrôles
     boutons_column = ft.Column(
-        controls=[mode_button, new_width, new_height, resize_button, t],
+        controls=[mode_button, new_width, new_height, resize_button, rotate_button, t],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER
     )
@@ -167,7 +170,7 @@ def main(page: ft.Page):
 
     
     #Ligne avec le bouton qui affiche le popup du choix du répertoire et du bouton qui cache le container
-    ligneBoutonsFichier = ft.Row([bt, bouton.monBouton(rotation, ft.icons.CLOSE)])
+    ligneBoutonsFichier = ft.Row([bt, bouton.monBouton(cacheListe, ft.icons.CLOSE)])
     blocGestionFichier = ft.Column([ligneBoutonsFichier, liste])
 
 
