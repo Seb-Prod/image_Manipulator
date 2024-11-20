@@ -42,7 +42,7 @@ def main(page: ft.Page):
         new_width.value = paramModif.largeur
         new_height.value = paramModif.hauteur
 
-        paramModif.rotation = paramModif.rotation - 90
+        paramModif.rotation = paramModif.rotation + 90
         displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
         page.update()
 
