@@ -152,8 +152,9 @@ def main(page: ft.Page):
     mode_button = ft.ElevatedButton(text="Passer en Noir et Blanc", on_click=toggle_mode)
 
     # Champs pour entrer les dimensions de redimensionnement (sans valeurs par défaut)
-    new_width = ft.TextField(label="Largeur (max 1920)", keyboard_type=ft.KeyboardType.NUMBER)
-    new_height = ft.TextField(label="Hauteur (max 1080)", keyboard_type=ft.KeyboardType.NUMBER)
+    new_width = ft.TextField(label="Largeur (max 1920)", input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""))
+    new_height = ft.TextField(label="Hauteur (max 1080)", input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""))
+
 
     # Bouton pour redimensionner l'image
     resize_button = ft.ElevatedButton(text="Redimensionner", on_click=actionChangeTaille)
