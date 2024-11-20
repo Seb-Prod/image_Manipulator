@@ -3,6 +3,7 @@ import os
 from PIL import Image
 import webbrowser
 import liste_fichier
+import bouton
 
 infoImage:liste_fichier.Image = liste_fichier.Image(rep="", nom="", ext="")
 
@@ -45,7 +46,8 @@ def main(page: ft.Page):
     # Action quand on clique sur un nom d'image
     def cliqueListe(e):
         nonlocal current_image_path
-
+        container_image.visible=True
+        container_boutons.visible=True
         selected_image = os.path.join(e.control.data.rep, e.control.data.nom)
         current_image_path = selected_image
 
@@ -125,8 +127,19 @@ def main(page: ft.Page):
     def chargeListe(rep:str):
         for fichier in liste_fichier.lister_fichiers2(os.path.join(rep)):
             liste.controls.append(ft.TextButton(text = fichier.nom, on_click=cliqueListe, data= fichier))
-    # for fichier in liste_fichier.lister_fichiers2(path):
-    #     liste.controls.append(ft.TextButton(text=fichier.nom, on_click=cliqueListe, data=fichier))
+    
+    #Cache le container gestion fichier
+    def cacheListe(e):
+        container_menu.visible = True
+        container_gestion_fichier.visible = False
+        page.update()
+
+    #Affiche le container gestion fichier
+    def afficheListe(e):
+        container_menu.visible = False
+        container_gestion_fichier.visible = True
+        page.update()
+
 
     #Action quand on valide un répertoire
     def getFolder(e):
@@ -141,24 +154,23 @@ def main(page: ft.Page):
     #Bouton qui affiche le popup du choix du répertoire
     bt = ft.ElevatedButton("Choisir le répertoire", on_click=lambda _: file_picker.get_directory_path())
 
+    
+    #Ligne avec le bouton qui affiche le popup du choix du répertoire et du bouton qui cache le container
+    ligneBoutonsFichier = ft.Row([bt, bouton.monBouton(cacheListe, ft.icons.CLOSE)])
+    blocGestionFichier = ft.Column([ligneBoutonsFichier, liste])
 
-    blocGestionFichier = ft.Column([bt, liste])
 
     # Conteneurs pour chaque section
-    container_gestion_fichier = ft.Container(
-        bgcolor=ft.colors.RED, content=blocGestionFichier, expand=1
-    )
-    container_image = ft.Container(
-        bgcolor=ft.colors.BLUE, content=displayed_image, expand=1
-    )
-    container_boutons = ft.Container(
-        bgcolor=ft.colors.ORANGE, content=boutons_column, expand=1
-    )
+    container_menu = ft.Container(width=60, content=bouton.monBouton(afficheListe, ft.icons.FOLDER), visible=False)
+    container_gestion_fichier = ft.Container(content=blocGestionFichier, width=250, visible=True)
+    container_image = ft.Container(content=displayed_image, expand=1, visible=False)
+    container_boutons = ft.Container(content=boutons_column, width=250, visible=False)
 
     # Ajouter les conteneurs alignés horizontalement
     page.add(
         ft.Row(
             [
+                container_menu,
                 container_gestion_fichier,
                 container_image,
                 container_boutons
