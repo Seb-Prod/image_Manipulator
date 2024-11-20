@@ -1,11 +1,13 @@
 import os
 from dataclasses import dataclass
 from typing import List
+import pathlib
 
 @dataclass
 class Image:
         nom:str
         rep:str
+        ext:str
 
 # retourne un tableau avec la liste des fichier image du répertoire sélectioné
 def lister_fichiers(repertoire) ->List[Image]:
@@ -18,7 +20,8 @@ def lister_fichiers(repertoire) ->List[Image]:
         #Boucle qui parcour le répertoire et ajoute dans le tableau result uniquement les fichiers images
         for file in os.listdir(repertoire):
                 if file.endswith(tuple(extension)):
-                        result.append(Image(nom=file, rep=repertoire))
+                        path = pathlib.Path(os.path.join(repertoire, file))
+                        result.append(Image(nom=file, rep=repertoire, ext=path.suffix))
                         
 
         #Retourne le tableau        
