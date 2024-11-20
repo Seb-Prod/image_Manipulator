@@ -2,6 +2,9 @@ import flet as ft
 import os
 from PIL import Image
 import webbrowser
+import liste_fichier
+
+infoImage:liste_fichier.Image = liste_fichier.Image(rep="", nom="", ext="")
 
 def main(page: ft.Page):
     page.title = "Image Manipulator LITE"
@@ -11,11 +14,6 @@ def main(page: ft.Page):
         img = Image.open(image_path)
         img = img.convert("L")  # Convertir en niveaux de gris
         img.save(output_path)  # Sauvegarder l'image convertie
-
-    # Fonction pour lister les fichiers (en excluant le dossier 'temp')
-    def lister_fichiers(repertoire):
-        # Filtrer les fichiers pour exclure "temp"
-        return [f for f in os.listdir(repertoire) if f != "temp" and os.path.isfile(os.path.join(repertoire, f))]
 
     # Variables globales
     current_image_path = None
@@ -47,7 +45,8 @@ def main(page: ft.Page):
     # Action quand on clique sur un nom d'image
     def cliqueListe(e):
         nonlocal current_image_path
-        selected_image = os.path.join(path, e.control.data)
+
+        selected_image = os.path.join(e.control.data.rep, e.control.data.nom)
         current_image_path = selected_image
 
         # Appliquer le mode actuel à l'image sélectionnée
@@ -123,12 +122,31 @@ def main(page: ft.Page):
     # Liste des fichiers sans le dossier "temp"
     liste = ft.ListView(expand=1, spacing=10, padding=20)
 
-    for fichier in lister_fichiers(path):
-        liste.controls.append(ft.TextButton(text=fichier, on_click=cliqueListe, data=fichier))
+    def chargeListe(rep:str):
+        for fichier in liste_fichier.lister_fichiers2(os.path.join(rep)):
+            liste.controls.append(ft.TextButton(text = fichier.nom, on_click=cliqueListe, data= fichier))
+    # for fichier in liste_fichier.lister_fichiers2(path):
+    #     liste.controls.append(ft.TextButton(text=fichier.nom, on_click=cliqueListe, data=fichier))
+
+    #Action quand on valide un répertoire
+    def getFolder(e):
+        liste.controls.clear()
+        chargeListe(e.path)
+        page.update()
+
+    #Le popup du choix du fichier
+    file_picker = ft.FilePicker(on_result=getFolder)
+    page.overlay.append(file_picker)
+
+    #Bouton qui affiche le popup du choix du répertoire
+    bt = ft.ElevatedButton("Choisir le répertoire", on_click=lambda _: file_picker.get_directory_path())
+
+
+    blocGestionFichier = ft.Column([bt, liste])
 
     # Conteneurs pour chaque section
     container_gestion_fichier = ft.Container(
-        bgcolor=ft.colors.RED, content=liste, expand=1
+        bgcolor=ft.colors.RED, content=blocGestionFichier, expand=1
     )
     container_image = ft.Container(
         bgcolor=ft.colors.BLUE, content=displayed_image, expand=1
