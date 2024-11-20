@@ -5,7 +5,7 @@ import webbrowser
 import liste_fichier
 import bouton
 
-infoImage:liste_fichier.Image = liste_fichier.Image(rep="", nom="", ext="")
+infoImage: liste_fichier.Image = liste_fichier.Image(rep="", nom="", ext="")
 
 def main(page: ft.Page):
     page.title = "Image Manipulator LITE"
@@ -46,8 +46,8 @@ def main(page: ft.Page):
     # Action quand on clique sur un nom d'image
     def cliqueListe(e):
         nonlocal current_image_path
-        container_image.visible=True
-        container_boutons.visible=True
+        container_image.visible = True
+        container_boutons.visible = True
         selected_image = os.path.join(e.control.data.rep, e.control.data.nom)
         current_image_path = selected_image
 
@@ -71,6 +71,10 @@ def main(page: ft.Page):
             return
 
         try:
+            # Vérifier que les champs ne sont pas vides
+            if not new_width.value or not new_height.value:
+                raise ValueError("Veuillez entrer une largeur et une hauteur.")
+
             # Récupérer les dimensions saisies par l'utilisateur
             new_w = int(new_width.value)
             new_h = int(new_height.value)
@@ -103,9 +107,9 @@ def main(page: ft.Page):
     # Bouton pour basculer le mode Noir et Blanc / Couleur
     mode_button = ft.ElevatedButton(text="Passer en Noir et Blanc", on_click=toggle_mode)
 
-    # Champs pour entrer les dimensions de redimensionnement
-    new_width = ft.TextField(label="Largeur (max 1920)", value="1920", keyboard_type=ft.KeyboardType.NUMBER)
-    new_height = ft.TextField(label="Hauteur (max 1080)", value="1080", keyboard_type=ft.KeyboardType.NUMBER)
+    # Champs pour entrer les dimensions de redimensionnement (sans valeurs par défaut)
+    new_width = ft.TextField(label="Largeur (max 1920)", keyboard_type=ft.KeyboardType.NUMBER)
+    new_height = ft.TextField(label="Hauteur (max 1080)", keyboard_type=ft.KeyboardType.NUMBER)
 
     # Bouton pour redimensionner l'image
     resize_button = ft.ElevatedButton(text="Redimensionner", on_click=resize_image)
@@ -117,48 +121,41 @@ def main(page: ft.Page):
         horizontal_alignment=ft.CrossAxisAlignment.CENTER
     )
 
-    # Définir le chemin des images
-    path = os.path.join(os.getcwd(), "img")
-    os.makedirs(path, exist_ok=True)
-
-    # Liste des fichiers sans le dossier "temp"
+    # Liste des fichiers
     liste = ft.ListView(expand=1, spacing=10, padding=20)
 
-    def chargeListe(rep:str):
+    def chargeListe(rep: str):
         for fichier in liste_fichier.lister_fichiers2(os.path.join(rep)):
-            liste.controls.append(ft.TextButton(text = fichier.nom, on_click=cliqueListe, data= fichier))
-    
-    #Cache le container gestion fichier
+            liste.controls.append(ft.TextButton(text=fichier.nom, on_click=cliqueListe, data=fichier))
+
+    # Cache le container gestion fichier
     def cacheListe(e):
         container_menu.visible = True
         container_gestion_fichier.visible = False
         page.update()
 
-    #Affiche le container gestion fichier
+    # Affiche le container gestion fichier
     def afficheListe(e):
         container_menu.visible = False
         container_gestion_fichier.visible = True
         page.update()
 
-
-    #Action quand on valide un répertoire
+    # Action quand on valide un répertoire
     def getFolder(e):
         liste.controls.clear()
         chargeListe(e.path)
         page.update()
 
-    #Le popup du choix du fichier
+    # Le popup du choix du fichier
     file_picker = ft.FilePicker(on_result=getFolder)
     page.overlay.append(file_picker)
 
-    #Bouton qui affiche le popup du choix du répertoire
+    # Bouton qui affiche le popup du choix du répertoire
     bt = ft.ElevatedButton("Choisir le répertoire", on_click=lambda _: file_picker.get_directory_path())
 
-    
-    #Ligne avec le bouton qui affiche le popup du choix du répertoire et du bouton qui cache le container
+    # Ligne avec le bouton
     ligneBoutonsFichier = ft.Row([bt, bouton.monBouton(cacheListe, ft.icons.CLOSE)])
     blocGestionFichier = ft.Column([ligneBoutonsFichier, liste])
-
 
     # Conteneurs pour chaque section
     container_menu = ft.Container(width=60, content=bouton.monBouton(afficheListe, ft.icons.FOLDER), visible=False)
