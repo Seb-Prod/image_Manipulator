@@ -4,11 +4,19 @@ from PIL import Image
 import webbrowser
 import liste_fichier
 import bouton
+import rotation2
 
 infoImage: liste_fichier.Image = liste_fichier.Image(rep="", nom="", ext="")
 
+
+
 def main(page: ft.Page):
     page.title = "Image Manipulator LITE"
+    
+    def rotation(e):
+        rotation2.rotate_image_with_pil(infoImage, 90)
+        displayed_image.src = os.path.join(os.getcwd(), "temp" + infoImage.ext)
+        page.update()
 
     # Fonction pour convertir une image en noir et blanc
     def convertir_nb(image_path, output_path):
@@ -50,6 +58,9 @@ def main(page: ft.Page):
         container_boutons.visible = True
         selected_image = os.path.join(e.control.data.rep, e.control.data.nom)
         current_image_path = selected_image
+        infoImage.nom = e.control.data.nom
+        infoImage.rep = e.control.data.rep
+        infoImage.ext = e.control.data.ext
 
         # Appliquer le mode actuel à l'image sélectionnée
         if mode_nb:  # Noir et Blanc
@@ -113,10 +124,13 @@ def main(page: ft.Page):
 
     # Bouton pour redimensionner l'image
     resize_button = ft.ElevatedButton(text="Redimensionner", on_click=resize_image)
+    
+    # Bouton pour faire une rotation de l'image
+    rotate_button = ft.ElevatedButton(text="Rotation", on_click=rotation)
 
     # Colonne des contrôles
     boutons_column = ft.Column(
-        controls=[mode_button, new_width, new_height, resize_button, t],
+        controls=[mode_button, new_width, new_height, resize_button, rotate_button, t],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER
     )
