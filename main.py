@@ -180,14 +180,14 @@ def main(page: ft.Page):
     resize_button = ft.ElevatedButton(text="Redimensionner", on_click=actionChangeTaille)
     
     # Bouton pour faire une rotation de l'image
-    rotate_button_right = bouton.monBouton(actionRotationDroite, ft.icons.ROTATE_RIGHT)
-    rotate_button_left = bouton.monBouton(actionRotationGauche, ft.icons.ROTATE_LEFT)
+    rotate_button_right = bouton.monBouton(actionRotationDroite, ft.icons.ROTATE_RIGHT,"Rotation à Droite")
+    rotate_button_left = bouton.monBouton(actionRotationGauche, ft.icons.ROTATE_LEFT, "Rotation à Gauche")
+    
     
     #ligne des boutons de ratation
     ligneBoutonRotation = ft.Row(controls=[rotate_button_left, rotate_button_right])
     
-    bouton_enregistrer = ft.ElevatedButton(text="Enregistrer", on_click=actionBoutonEnregistrerImg)
-
+    bouton_enregistrer = bouton.monBouton(actionBoutonEnregistrerImg, ft.icons.SAVE_ALT_SHARP, "Enregistrer")
 
     # Colonne des contrôles
     boutons_column = ft.Column(
