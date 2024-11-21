@@ -4,11 +4,10 @@ from PIL import Image
 import webbrowser
 import liste_fichier
 import bouton
-import rotation2
 import modificationImage as modif
 
 infoImage: liste_fichier.Image = liste_fichier.Image(rep="", nom="", ext="")
-paramModif: modif.ParamModif = modif.ParamModif(nb=False, rotation=0, largeur=0, hauteur=0)
+paramModif: modif.ParamModif = modif.ParamModif(nb=False, rotation=0, largeur=0, hauteur=0, mode="RGB")
 
 
 def main(page: ft.Page):
@@ -20,10 +19,8 @@ def main(page: ft.Page):
             paramModif.nb = True
         else:
             paramModif.nb = False
-
-        displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
-        page.update()
-        
+        lanceModif()
+          
     def actionRotationDroite(e):
         paramModif.largeur = int(new_height.value)
         paramModif.hauteur = int(new_width.value)
@@ -32,8 +29,7 @@ def main(page: ft.Page):
         new_height.value = paramModif.hauteur
 
         paramModif.rotation = paramModif.rotation - 90
-        displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
-        page.update()
+        lanceModif()
 
     def actionRotationGauche(e):
         paramModif.largeur = int(new_height.value)
@@ -43,15 +39,16 @@ def main(page: ft.Page):
         new_height.value = paramModif.hauteur
 
         paramModif.rotation = paramModif.rotation + 90
-        displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
-        page.update()
+        lanceModif()
 
     def actionChangeTaille(e):
         paramModif.largeur = int(new_width.value)
         paramModif.hauteur = int(new_height.value)
+        lanceModif()
+
+    def lanceModif():
         displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
         page.update()
-
 
     # Variables globales
     current_image_path = None
@@ -66,19 +63,29 @@ def main(page: ft.Page):
 
     # Action pour basculer le mode Couleur / Noir et Blanc
     def toggle_mode(e):
-        nonlocal mode_nb, current_image_path
-        mode_nb = not mode_nb  # Bascule le mode
-        mode_button.text = "Passer en Couleur" if mode_nb else "Passer en Noir et Blanc"
+        # nonlocal mode_nb, current_image_path
+        # mode_nb = not mode_nb  # Bascule le mode
+        # mode_button.text = "Passer en Couleur" if mode_nb else "Passer en Noir et Blanc"
 
-        if current_image_path is not None:
-            if mode_nb:  # Noir et Blanc
-                bw_path = os.path.join(temp_path, "bw_" + os.path.basename(current_image_path))
-                convertir_nb(current_image_path, bw_path)
-                displayed_image.src = bw_path
-            else:  # Couleur
-                displayed_image.src = current_image_path
+        # if current_image_path is not None:
+        #     if mode_nb:  # Noir et Blanc
+        #         bw_path = os.path.join(temp_path, "bw_" + os.path.basename(current_image_path))
+        #         convertir_nb(current_image_path, bw_path)
+        #         displayed_image.src = bw_path
+        #     else:  # Couleur
+        #         displayed_image.src = current_image_path
 
+        # page.update()
+        if not paramModif.nb:
+            mode_button.text = "Passer en Couleur"
+            paramModif.nb = True
+        else:
+            mode_button.text = "Passer en Noir t Blanc"
+            paramModif.nb = False
+        lanceModif()
         page.update()
+
+        print(paramModif)
 
     # Action quand on clique sur un nom d'image
     def cliqueListe(e):
@@ -95,10 +102,13 @@ def main(page: ft.Page):
         infoImage.ext = e.control.data.ext
         paramModif.largeur = modif.getTailleInitiale(infoImage).largeur
         paramModif.hauteur = modif.getTailleInitiale(infoImage).hauteur
+        paramModif.mode = modif.getTailleInitiale(infoImage).mode
         paramModif.nb = False
+        mode_button.text = "Passer en Couleur"
         paramModif.rotation = 0
         new_width.value = paramModif.largeur
         new_height.value = paramModif.hauteur
+
         
         displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
 
@@ -148,7 +158,7 @@ def main(page: ft.Page):
     t = ft.Text()
 
     # Bouton pour basculer le mode Noir et Blanc / Couleur
-    checkboxNoirEtBlanc = ft.Checkbox(label="Noire et blanc", value=False, on_change=actionCheckBox)
+    checkboxNoirEtBlanc = ft.Checkbox(label="Noire et blanc", value=False, on_change=actionCheckBox, visible=False)
     mode_button = ft.ElevatedButton(text="Passer en Noir et Blanc", on_click=toggle_mode)
 
     # Champs pour entrer les dimensions de redimensionnement (sans valeurs par défaut)

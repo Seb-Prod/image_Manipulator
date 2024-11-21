@@ -12,6 +12,7 @@ class ParamModif:
         rotation:int
         largeur:int
         hauteur:int
+        mode:str
 
 def lanceLesModif(infoImage:liste_fichier.Image, lesModif:ParamModif) ->str:
         imgModifier = Image.open(os.path.join(infoImage.rep, infoImage.nom))
@@ -32,4 +33,4 @@ def lanceLesModif(infoImage:liste_fichier.Image, lesModif:ParamModif) ->str:
 def getTailleInitiale(infoImage:liste_fichier.Image) ->ParamModif:
         imgOrigin = Image.open(os.path.join(infoImage.rep, infoImage.nom))
         tailleImage = imgOrigin.size
-        return ParamModif(nb=False, rotation=0, largeur=tailleImage[0], hauteur=tailleImage[1])
+        return ParamModif(nb=False, rotation=0, largeur=tailleImage[0], hauteur=tailleImage[1], mode=imgOrigin.mode)
