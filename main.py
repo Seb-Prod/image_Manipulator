@@ -86,9 +86,7 @@ def main(page: ft.Page):
     mode_nb = False  # Par défaut, le mode est en couleur
 
     # Image affichée
-    displayed_image = ft.Image(
-        width=500, height=500, fit=ft.ImageFit.CONTAIN
-    )
+    displayed_image = ft.Image()
 
     # Action pour basculer le mode Couleur / Noir et Blanc
     def toggle_mode(e):
