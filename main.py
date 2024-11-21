@@ -108,46 +108,47 @@ def main(page: ft.Page):
     def cliqueListe(e):
         container_image.visible = True
         container_boutons.visible = True
-        # selected_image = os.path.join(e.control.data.rep, e.control.data.nom)
-        # current_image_path = selected_image
-        # displayed_image.src = selected_image
 
+        #initialisation des informations de l'image
         infoImage.nom = e.control.data.nom
         infoImage.rep = e.control.data.rep
         infoImage.ext = e.control.data.ext
         paramModif.largeur = modif.getTailleInitiale(infoImage).largeur
         paramModif.hauteur = modif.getTailleInitiale(infoImage).hauteur
         paramModif.mode = modif.getTailleInitiale(infoImage).mode
+
+        #initialisation des paramètres de modifications
         paramModif.nb = False
         mode_button.text = "Passer en Noir et Blanc"
         paramModif.rotation = 0
         new_width.value = paramModif.largeur
         new_height.value = paramModif.hauteur
 
-        
+        #Chargement de l'image d'aperçus
         displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
 
-        #t.value = f"Image sélectionnée : {os.path.basename(current_image_path)}"
+        #Affichage du nom de l'image sélectionée
+        t.value = f"Image sélectionnée : {infoImage.nom}"
+
         page.update()
 
 
-    # Texte d'information
+    #Initialisation du label
     t = ft.Text()
 
     # Bouton pour basculer le mode Noir et Blanc / Couleur
-    mode_button = ft.ElevatedButton(text="Passer en Noir et Blanc", on_click=actionChangeCouleur)
+    mode_button = ft.ElevatedButton(width=240, text="Passer en Noir et Blanc", on_click=actionChangeCouleur)
 
     # Champs pour entrer les dimensions de redimensionnement (sans valeurs par défaut)
     new_width = ft.TextField(label="Largeur (max 1920)", input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""))
     new_height = ft.TextField(label="Hauteur (max 1080)", input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""))
 
     # Bouton pour redimensionner l'image
-    resize_button = ft.ElevatedButton(text="Redimensionner", on_click=actionChangeTaille)
+    resize_button = ft.ElevatedButton(width=240, text="Redimensionner", on_click=actionChangeTaille)
     
     # Bouton pour faire une rotation de l'image
     rotate_button_right = bouton.monBouton(actionRotationDroite, ft.icons.ROTATE_RIGHT,"Rotation à Droite")
     rotate_button_left = bouton.monBouton(actionRotationGauche, ft.icons.ROTATE_LEFT, "Rotation à Gauche")
-    
     
     #ligne des boutons de ratation
     ligneBoutonRotation = ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[rotate_button_left, rotate_button_right])
