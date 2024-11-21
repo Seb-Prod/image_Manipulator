@@ -34,3 +34,18 @@ def getTailleInitiale(infoImage:liste_fichier.Image) ->ParamModif:
         imgOrigin = Image.open(os.path.join(infoImage.rep, infoImage.nom))
         tailleImage = imgOrigin.size
         return ParamModif(nb=False, rotation=0, largeur=tailleImage[0], hauteur=tailleImage[1], mode=imgOrigin.mode)
+
+def saveModif(infoImage:liste_fichier.Image, lesModif:ParamModif):
+        imgModifier = Image.open(os.path.join(infoImage.rep, infoImage.nom))
+        #Si noir et blanc
+        if lesModif.nb:
+                imgModifier = imgModifier.convert("L")  # Convertir en niveaux de gris
+        #Angle de l'image
+        imgModifier = imgModifier.rotate(lesModif.rotation, expand=True)
+
+        #taille image
+        imgModifier = imgModifier.resize((lesModif.largeur, lesModif.hauteur))
+        
+        #Sauvegarde
+        imgModifier.save(os.path.join(infoImage.rep, infoImage.nom))
+        #imgModifier.save(os.path.join(infoImage.rep, infoImage.nom))

@@ -57,6 +57,9 @@ def main(page: ft.Page):
         for fichier in liste_fichier.lister_recherche(infoImage.rep, saisieRecherche.value):
             liste.controls.append(ft.TextButton(text=fichier.nom, on_click=cliqueListe, data=fichier))
         page.update()
+        
+    def actionBoutonEnregistrerImg(e):
+        modif.saveModif(infoImage, paramModif)
 
     # Variables globales
     current_image_path = None
@@ -182,11 +185,13 @@ def main(page: ft.Page):
     
     #ligne des boutons de ratation
     ligneBoutonRotation = ft.Row(controls=[rotate_button_left, rotate_button_right])
+    
+    bouton_enregistrer = ft.ElevatedButton(text="Enregistrer", on_click=actionBoutonEnregistrerImg)
 
 
     # Colonne des contrôles
     boutons_column = ft.Column(
-        controls=[mode_button,checkboxNoirEtBlanc, new_width, new_height, resize_button, ligneBoutonRotation, t],
+        controls=[mode_button,checkboxNoirEtBlanc, new_width, new_height, resize_button, ligneBoutonRotation, bouton_enregistrer ,t],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER
     )
@@ -250,6 +255,8 @@ def main(page: ft.Page):
             ],
             expand=1
         )
+        
+        
     )
 
 ft.app(target=main)
