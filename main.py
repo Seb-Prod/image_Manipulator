@@ -201,7 +201,7 @@ def main(page: ft.Page):
     
     
     #ligne des boutons de ratation
-    ligneBoutonRotation = ft.Row(controls=[rotate_button_left, rotate_button_right])
+    ligneBoutonRotation = ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[rotate_button_left, rotate_button_right])
     
     bouton_enregistrer = bouton.monBouton(actionBoutonEnregistrerImg, ft.icons.SAVE_ALT_SHARP, "Enregistrer")
 
@@ -254,17 +254,17 @@ def main(page: ft.Page):
     # Bouton qui affiche le popup du choix du répertoire
     bt = ft.ElevatedButton("Choisir le répertoire", on_click=lambda _: file_picker.get_directory_path())
     saisieRecherche = ft.TextField(label="Recherche", width=185)
-    boutonLanceRecherche = bouton.monBouton(actionBoutonRecherche, ft.icons.SEARCH)
-    boutonAjoutImage = bouton.monBouton(actionBoutonAjoutImg, ft.icons.ADD_CIRCLE)
+    boutonLanceRecherche = bouton.monBouton(actionBoutonRecherche, ft.icons.SEARCH, "Lancer la recherche")
+    boutonAjoutImage = bouton.monBouton(actionBoutonAjoutImg, ft.icons.ADD_CIRCLE, "Ajouter une image")
     boutonAjoutImage.visible = False
 
     # Ligne avec le bouton
-    ligneBoutonsFichier = ft.Row([bt, bouton.monBouton(cacheListe, ft.icons.CLOSE)])
+    ligneBoutonsFichier = ft.Row([bt, bouton.monBouton(cacheListe, ft.icons.CLOSE, "Masquer la liste")])
     ligneRecherche = ft.Row([saisieRecherche, boutonLanceRecherche], visible=False)
     blocGestionFichier = ft.Column([ligneBoutonsFichier, ligneRecherche , liste,boutonAjoutImage])
 
     # Conteneurs pour chaque section
-    container_menu = ft.Container(width=60, content=bouton.monBouton(afficheListe, ft.icons.FOLDER), visible=False)
+    container_menu = ft.Container(width=60, content=bouton.monBouton(afficheListe, ft.icons.FOLDER, "Afficher la liste"), visible=False)
     container_gestion_fichier = ft.Container(content=blocGestionFichier, width=250, visible=True)
     container_image = ft.Container(content=displayed_image, expand=1, visible=False)
     container_boutons = ft.Container(content=boutons_column, width=250, visible=False)
