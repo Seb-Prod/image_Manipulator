@@ -35,7 +35,7 @@ def main(page: ft.Page):
         new_width.value = tempsHauteur
         new_height.value = tempsLargeur
 
-        paramModif.rotation = paramModif.rotation + angle
+        paramModif.rotation = paramModif.rotation + 90
         lanceModif()
 
     #Préparation modification de l'image (taille)
@@ -192,9 +192,7 @@ def main(page: ft.Page):
         fichiers = liste_fichier.lister_fichiers2(os.path.join(rep))
         fichiers_trie = sorted(fichiers, key=lambda f: f.nom.lower())  # Trie les fichiers par nom, insensible à la casse
         for fichier in fichiers_trie:
-            liste.controls.append(ft.TextButton(text=fichier.nom, on_click=cliqueListe, data=fichier,icon="image_sharp", style=ft.ButtonStyle(
-                shape=ft.RoundedRectangleBorder(radius=10),
-            )))
+            liste.controls.append(ft.TextButton(text=fichier.nom, on_click=cliqueListe, data=fichier))
 
     # Cache le container gestion fichier
     def cacheListe(e):
