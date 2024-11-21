@@ -21,11 +21,14 @@ def main(page: ft.Page):
         actionRotation(90)
 
     def actionRotation(angle:int):
-        paramModif.largeur = int(new_height.value)
-        paramModif.hauteur = int(new_width.value)
+        tempsLargeur = paramModif.largeur
+        tempsHauteur = paramModif.hauteur
 
-        new_width.value = paramModif.largeur
-        new_height.value = paramModif.hauteur
+        paramModif.largeur = tempsHauteur
+        paramModif.hauteur = tempsLargeur
+
+        new_width.value = tempsHauteur
+        new_height.value = tempsLargeur
 
         paramModif.rotation = paramModif.rotation + 90
         lanceModif()
@@ -35,6 +38,21 @@ def main(page: ft.Page):
         paramModif.largeur = int(new_width.value)
         paramModif.hauteur = int(new_height.value)
         lanceModif()
+
+    #
+    def valeurLargeurChange(e):
+        if checkBoxProportion.value == True:
+            ratio:float = paramModif.largeur / paramModif.hauteur
+            new_height.value = int((int(e.data) / ratio))
+            page.update()
+
+    #
+    def valeurHauteurChange(e):
+        if checkBoxProportion.value == True:
+            ratio:float = paramModif.largeur / paramModif.hauteur
+            new_width.value = int((int(e.data) * ratio))
+            page.update()
+
 
     #Préparation modifcation de l'image (N/B)
     def actionChangeCouleur(e):
@@ -58,15 +76,15 @@ def main(page: ft.Page):
 
     def traitementReponseSauvegarde(e):
         page.close(demandeConfimationSauvegarde)
-        print(e.control.text)
         if e.control.text == "Oui":
             modif.lanceLesModif(infoImage, paramModif, True)
+            paramModif.rotation = 0
             page.open(confimationSauvegarde)
 
     demandeConfimationSauvegarde = ft.AlertDialog(
         modal=True,
         title=ft.Text("Enregistrement"),
-        content=ft.Text("Voulez vous enregistrer les modification ?"),
+        content=ft.Text("Voulez vous enregistrer les modifications ?"),
         actions=[
             ft.TextButton("Oui", on_click=traitementReponseSauvegarde),
             ft.TextButton("Non", on_click=traitementReponseSauvegarde),
@@ -132,7 +150,6 @@ def main(page: ft.Page):
 
         page.update()
 
-
     #Initialisation du label
     t = ft.Text()
 
@@ -140,8 +157,9 @@ def main(page: ft.Page):
     mode_button = ft.ElevatedButton(width=240, text="Passer en Noir et Blanc", on_click=actionChangeCouleur)
 
     # Champs pour entrer les dimensions de redimensionnement (sans valeurs par défaut)
-    new_width = ft.TextField(label="Largeur (max 1920)", input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""))
-    new_height = ft.TextField(label="Hauteur (max 1080)", input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""))
+    new_width = ft.TextField(label="Largeur (max 1920)", input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""), on_change=valeurLargeurChange)
+    new_height = ft.TextField(label="Hauteur (max 1080)", input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""), on_change=valeurHauteurChange)
+    checkBoxProportion = ft.Checkbox(label="Garger proportion de l'image", value=False)
 
     # Bouton pour redimensionner l'image
     resize_button = ft.ElevatedButton(width=240, text="Redimensionner", on_click=actionChangeTaille)
@@ -157,7 +175,7 @@ def main(page: ft.Page):
 
     # Colonne des contrôles
     boutons_column = ft.Column(
-        controls=[mode_button, new_width, new_height, resize_button, ligneBoutonRotation, bouton_enregistrer ,t],
+        controls=[mode_button, checkBoxProportion, new_width, new_height, resize_button, ligneBoutonRotation, bouton_enregistrer ,t],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER
     )
