@@ -88,7 +88,7 @@ def main(page: ft.Page):
             mode_button.text = "Passer en Couleur"
             paramModif.nb = True
         else:
-            mode_button.text = "Passer en Noir t Blanc"
+            mode_button.text = "Passer en Noir et Blanc"
             paramModif.nb = False
         lanceModif()
         page.update()
@@ -112,7 +112,7 @@ def main(page: ft.Page):
         paramModif.hauteur = modif.getTailleInitiale(infoImage).hauteur
         paramModif.mode = modif.getTailleInitiale(infoImage).mode
         paramModif.nb = False
-        mode_button.text = "Passer en Couleur"
+        mode_button.text = "Passer en Noir et Blanc"
         paramModif.rotation = 0
         new_width.value = paramModif.largeur
         new_height.value = paramModif.hauteur
@@ -172,7 +172,6 @@ def main(page: ft.Page):
     # Champs pour entrer les dimensions de redimensionnement (sans valeurs par défaut)
     new_width = ft.TextField(label="Largeur (max 1920)", input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""))
     new_height = ft.TextField(label="Hauteur (max 1080)", input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""))
-
 
     # Bouton pour redimensionner l'image
     resize_button = ft.ElevatedButton(text="Redimensionner", on_click=actionChangeTaille)
