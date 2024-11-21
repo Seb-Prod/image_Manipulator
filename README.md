@@ -1,5 +1,5 @@
 Image Manipulator LITE
-![Alt text for the image]([https://example.com/image.png](https://github.com/Seb-Prod/image_Manipulator/blob/testIcon/CaptureEcran.png))Team :
+![Alt text for the image](https://github.com/Seb-Prod/image_Manipulator/blob/testIcon/CaptureEcran.png)Team :
     Alexandre Fourquin
     Jenna Ramiaramanantsoa
     Ludovic DENIS
