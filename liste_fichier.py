@@ -43,3 +43,17 @@ def lister_fichiers2(repertoire) ->List[Image]:
 
         #Retourne le tableau        
         return result
+
+# retourne un tableau avec la liste des fichier image du répertoire sélectioné
+def lister_recherche(repertoire, recherche) ->List[Image]:
+        result:Image =[]
+        extension = [".png", ".jpeg", ".jpg", ".webp"]
+
+        for file in os.listdir(repertoire):
+                if file.endswith(tuple(extension)):
+                        if recherche in file:
+                                print("Le mot", recherche, "est présent dans le texte.")
+                                path = pathlib.Path(os.path.join(repertoire, file))
+                                result.append(Image(nom=file, rep=repertoire, ext=path.suffix))
+        
+        return result

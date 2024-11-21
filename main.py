@@ -50,6 +50,14 @@ def main(page: ft.Page):
         displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
         page.update()
 
+    def actionBoutonRecherche(e):
+        print(saisieRecherche.value)
+        print(infoImage.rep)
+        liste.controls.clear()
+        for fichier in liste_fichier.lister_recherche(infoImage.rep, saisieRecherche.value):
+            liste.controls.append(ft.TextButton(text=fichier.nom, on_click=cliqueListe, data=fichier))
+        page.update()
+
     # Variables globales
     current_image_path = None
     temp_path = os.path.join(os.getcwd(), "temp")
@@ -206,7 +214,9 @@ def main(page: ft.Page):
     # Action quand on valide un répertoire
     def getFolder(e):
         liste.controls.clear()
+        infoImage.rep = e.path
         chargeListe(e.path)
+        ligneRecherche.visible=True
         page.update()
 
     # Le popup du choix du fichier
@@ -215,10 +225,14 @@ def main(page: ft.Page):
 
     # Bouton qui affiche le popup du choix du répertoire
     bt = ft.ElevatedButton("Choisir le répertoire", on_click=lambda _: file_picker.get_directory_path())
+    saisieRecherche = ft.TextField(label="Recherche", width=185)
+    boutonLanceRecherche = bouton.monBouton(actionBoutonRecherche, ft.icons.SEARCH)
+   
     
     # Ligne avec le bouton
     ligneBoutonsFichier = ft.Row([bt, bouton.monBouton(cacheListe, ft.icons.CLOSE)])
-    blocGestionFichier = ft.Column([ligneBoutonsFichier, liste])
+    ligneRecherche = ft.Row([saisieRecherche, boutonLanceRecherche], visible=False)
+    blocGestionFichier = ft.Column([ligneBoutonsFichier, ligneRecherche , liste])
 
     # Conteneurs pour chaque section
     container_menu = ft.Container(width=60, content=bouton.monBouton(afficheListe, ft.icons.FOLDER), visible=False)
