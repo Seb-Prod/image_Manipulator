@@ -12,6 +12,11 @@ paramModif: modif.ParamModif = modif.ParamModif(nb=False, rotation=0, largeur=0,
 
 def main(page: ft.Page):
     page.title = "Image Manipulator LITE"
+    page.window.width = 1080
+    page.window.height = 720
+    page.window.center()
+    page.window.min_width = 900
+    page.window.min_height = 500
     
     #Préparation modification de l'image (rotation)
     def actionRotationDroite(e):
