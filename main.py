@@ -12,26 +12,15 @@ paramModif: modif.ParamModif = modif.ParamModif(nb=False, rotation=0, largeur=0,
 
 def main(page: ft.Page):
     page.title = "Image Manipulator LITE"
-
-    def actionCheckBox(e):
-        print(paramModif)
-        if e.data == "true":
-            paramModif.nb = True
-        else:
-            paramModif.nb = False
-        lanceModif()
-          
+    
+    #Préparation modification de l'image (rotation)
     def actionRotationDroite(e):
-        paramModif.largeur = int(new_height.value)
-        paramModif.hauteur = int(new_width.value)
-
-        new_width.value = paramModif.largeur
-        new_height.value = paramModif.hauteur
-
-        paramModif.rotation = paramModif.rotation - 90
-        lanceModif()
+        actionRotation(-90)
 
     def actionRotationGauche(e):
+        actionRotation(90)
+
+    def actionRotation(angle:int):
         paramModif.largeur = int(new_height.value)
         paramModif.hauteur = int(new_width.value)
 
@@ -41,68 +30,14 @@ def main(page: ft.Page):
         paramModif.rotation = paramModif.rotation + 90
         lanceModif()
 
+    #Préparation modification de l'image (taille)
     def actionChangeTaille(e):
         paramModif.largeur = int(new_width.value)
         paramModif.hauteur = int(new_height.value)
         lanceModif()
 
-    def lanceModif():
-        displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
-        page.update()
-
-    def actionBoutonRecherche(e):
-        print(saisieRecherche.value)
-        print(infoImage.rep)
-        liste.controls.clear()
-        fichiers = liste_fichier.lister_recherche(infoImage.rep, saisieRecherche.value)
-        fichiers_trie = sorted(fichiers, key=lambda f: f.nom.lower())  # Trie les fichiers par nom
-        for fichier in fichiers_trie:
-            liste.controls.append(ft.TextButton(text=fichier.nom, on_click=cliqueListe, data=fichier))
-        page.update()
-        
-    def actionBoutonEnregistrerImg(e):
-        modif.saveModif(infoImage, paramModif)
-
-    def actionBoutonAjoutImg(e):
-        file_pickerAdd.pick_files(
-                allow_multiple=False, allowed_extensions=["png", "jpg", "jpeg"],dialog_title="Sélectionnez l'image à ajouter")
-
-    def ajoutImg(e: ft.FilePickerResultEvent):
-        print("je vais afficher le e")
-        print(e.files)
-        print("fin")
-        if not e.files == None:
-            for file in e.files:
-                modif.ajoutImage(file.path, file.name, infoImage.rep)
-            liste.controls.clear()
-            chargeListe(infoImage.rep)
-            page.update()
-
-
-    # Variables globales
-    current_image_path = None
-    temp_path = os.path.join(os.getcwd(), "temp")
-    os.makedirs(temp_path, exist_ok=True)
-    mode_nb = False  # Par défaut, le mode est en couleur
-
-    # Image affichée
-    displayed_image = ft.Image()
-
-    # Action pour basculer le mode Couleur / Noir et Blanc
-    def toggle_mode(e):
-        # nonlocal mode_nb, current_image_path
-        # mode_nb = not mode_nb  # Bascule le mode
-        # mode_button.text = "Passer en Couleur" if mode_nb else "Passer en Noir et Blanc"
-
-        # if current_image_path is not None:
-        #     if mode_nb:  # Noir et Blanc
-        #         bw_path = os.path.join(temp_path, "bw_" + os.path.basename(current_image_path))
-        #         convertir_nb(current_image_path, bw_path)
-        #         displayed_image.src = bw_path
-        #     else:  # Couleur
-        #         displayed_image.src = current_image_path
-
-        # page.update()
+    #Préparation modifcation de l'image (N/B)
+    def actionChangeCouleur(e):
         if not paramModif.nb:
             mode_button.text = "Passer en Couleur"
             paramModif.nb = True
@@ -110,20 +45,73 @@ def main(page: ft.Page):
             mode_button.text = "Passer en Noir et Blanc"
             paramModif.nb = False
         lanceModif()
+    
+    #Application des modification
+    def lanceModif():
+        displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
         page.update()
 
-        print(paramModif)
+    #Enregistrement des modification
+    def actionBoutonEnregistrerImg(e):
+        page.open(demandeConfimationSauvegarde)
+        
 
-    # Action quand on clique sur un nom d'image
+    def traitementReponseSauvegarde(e):
+        page.close(demandeConfimationSauvegarde)
+        print(e.control.text)
+        if e.control.text == "Oui":
+            modif.lanceLesModif(infoImage, paramModif, True)
+            page.open(confimationSauvegarde)
+
+    demandeConfimationSauvegarde = ft.AlertDialog(
+        modal=True,
+        title=ft.Text("Enregistrement"),
+        content=ft.Text("Voulez vous enregistrer les modification ?"),
+        actions=[
+            ft.TextButton("Oui", on_click=traitementReponseSauvegarde),
+            ft.TextButton("Non", on_click=traitementReponseSauvegarde),
+        ],
+        actions_alignment=ft.MainAxisAlignment.END,
+    )
+
+    confimationSauvegarde = ft.AlertDialog(
+        title=ft.Text("Sauvegarde faite")
+    )
+
+    #Lance l'actualisation de la liste selon la recherche
+    def actionBoutonRecherche(e):
+        liste.controls.clear()
+        fichiers = liste_fichier.lister_recherche(infoImage.rep, saisieRecherche.value)
+        fichiers_trie = sorted(fichiers, key=lambda f: f.nom.lower())  # Trie les fichiers par nom
+        for fichier in fichiers_trie:
+            liste.controls.append(ft.TextButton(text=fichier.nom, on_click=cliqueListe, data=fichier))
+        page.update()
+    
+    #Affiche le popup du choix du fichier à inporter
+    def actionBoutonAjoutImg(e):
+        file_pickerAdd.pick_files(
+                allow_multiple=False, allowed_extensions=["png", "jpg", "jpeg"],dialog_title="Sélectionnez l'image à ajouter")
+
+    #Lance l'ajout de l'image séléctionné à la bibliothèque
+    def ajoutImg(e: ft.FilePickerResultEvent):
+        if not e.files == None:
+            for file in e.files:
+                modif.ajoutImage(file.path, file.name, infoImage.rep)
+            liste.controls.clear()
+            chargeListe(infoImage.rep)
+            page.update()
+
+    #Image d'aperçus
+    displayed_image = ft.Image()
+
+    # Action quand on choisie une image à afficher
     def cliqueListe(e):
-        nonlocal current_image_path
         container_image.visible = True
         container_boutons.visible = True
-        selected_image = os.path.join(e.control.data.rep, e.control.data.nom)
-        current_image_path = selected_image
-        displayed_image.src = selected_image
+        # selected_image = os.path.join(e.control.data.rep, e.control.data.nom)
+        # current_image_path = selected_image
+        # displayed_image.src = selected_image
 
-        checkboxNoirEtBlanc.value = False
         infoImage.nom = e.control.data.nom
         infoImage.rep = e.control.data.rep
         infoImage.ext = e.control.data.ext
@@ -139,54 +127,15 @@ def main(page: ft.Page):
         
         displayed_image.src_base64 = modif.lanceLesModif(infoImage, paramModif)
 
-        t.value = f"Image sélectionnée : {os.path.basename(current_image_path)}"
+        #t.value = f"Image sélectionnée : {os.path.basename(current_image_path)}"
         page.update()
 
-    # Action pour redimensionner l'image
-    def resize_image(e):
-        nonlocal current_image_path
-        if current_image_path is None:
-            t.value = "Veuillez d'abord sélectionner une image."
-            page.update()
-            return
-
-        try:
-            # Vérifier que les champs ne sont pas vides
-            if not new_width.value or not new_height.value:
-                raise ValueError("Veuillez entrer une largeur et une hauteur.")
-
-            # Récupérer les dimensions saisies par l'utilisateur
-            new_w = int(new_width.value)
-            new_h = int(new_height.value)
-
-            # Validation des dimensions
-            if new_w <= 0 or new_h <= 0:
-                raise ValueError("Les dimensions doivent être des entiers positifs.")
-            if new_w > 1920 or new_h > 1080:
-                raise ValueError("Les dimensions ne peuvent pas dépasser 1920x1080 pixels.")
-
-            resized_path = os.path.join(temp_path, "resized_" + os.path.basename(current_image_path))
-            with Image.open(current_image_path) as img:
-                img = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
-                img.save(resized_path)
-
-            displayed_image.src = resized_path
-            t.value = f"Image redimensionnée à {new_w}x{new_h} pixels."
-
-            # Ouvrir l'image redimensionnée dans une nouvelle fenêtre
-            webbrowser.open(f"file://{resized_path}")
-
-            page.update()
-        except ValueError as e:
-            t.value = f"Erreur : {str(e)}"
-            page.update()
 
     # Texte d'information
     t = ft.Text()
 
     # Bouton pour basculer le mode Noir et Blanc / Couleur
-    checkboxNoirEtBlanc = ft.Checkbox(label="Noire et blanc", value=False, on_change=actionCheckBox, visible=False)
-    mode_button = ft.ElevatedButton(text="Passer en Noir et Blanc", on_click=toggle_mode)
+    mode_button = ft.ElevatedButton(text="Passer en Noir et Blanc", on_click=actionChangeCouleur)
 
     # Champs pour entrer les dimensions de redimensionnement (sans valeurs par défaut)
     new_width = ft.TextField(label="Largeur (max 1920)", input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""))
@@ -207,7 +156,7 @@ def main(page: ft.Page):
 
     # Colonne des contrôles
     boutons_column = ft.Column(
-        controls=[mode_button,checkboxNoirEtBlanc, new_width, new_height, resize_button, ligneBoutonRotation, bouton_enregistrer ,t],
+        controls=[mode_button, new_width, new_height, resize_button, ligneBoutonRotation, bouton_enregistrer ,t],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER
     )
