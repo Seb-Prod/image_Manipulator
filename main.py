@@ -61,6 +61,22 @@ def main(page: ft.Page):
     def actionBoutonEnregistrerImg(e):
         modif.saveModif(infoImage, paramModif)
 
+    def actionBoutonAjoutImg(e):
+        file_pickerAdd.pick_files(
+                allow_multiple=False, allowed_extensions=["png", "jpg", "jpeg"],dialog_title="Sélectionnez l'image à ajouter")
+
+    def ajoutImg(e: ft.FilePickerResultEvent):
+        print("je vais afficher le e")
+        print(e.files)
+        print("fin")
+        if not e.files == None:
+            for file in e.files:
+                modif.ajoutImage(file.path, file.name, infoImage.rep)
+            liste.controls.clear()
+            chargeListe(infoImage.rep)
+            page.update()
+
+
     # Variables globales
     current_image_path = None
     temp_path = os.path.join(os.getcwd(), "temp")
@@ -217,26 +233,33 @@ def main(page: ft.Page):
 
     # Action quand on valide un répertoire
     def getFolder(e):
-        liste.controls.clear()
-        infoImage.rep = e.path
-        chargeListe(e.path)
-        ligneRecherche.visible=True
+        if not e.path==None:
+            liste.controls.clear()
+            infoImage.rep = e.path
+            chargeListe(e.path)
+            ligneRecherche.visible=True
+            boutonAjoutImage.visible = True
         page.update()
 
-    # Le popup du choix du fichier
+    # Le popup du choix du répertoire
     file_picker = ft.FilePicker(on_result=getFolder)
     page.overlay.append(file_picker)
+
+    # Le popup du choix du fichier à ajouter
+    file_pickerAdd = ft.FilePicker(on_result=ajoutImg)
+    page.overlay.append(file_pickerAdd)
 
     # Bouton qui affiche le popup du choix du répertoire
     bt = ft.ElevatedButton("Choisir le répertoire", on_click=lambda _: file_picker.get_directory_path())
     saisieRecherche = ft.TextField(label="Recherche", width=185)
     boutonLanceRecherche = bouton.monBouton(actionBoutonRecherche, ft.icons.SEARCH)
-   
-    
+    boutonAjoutImage = bouton.monBouton(actionBoutonAjoutImg, ft.icons.ADD_CIRCLE)
+    boutonAjoutImage.visible = False
+
     # Ligne avec le bouton
     ligneBoutonsFichier = ft.Row([bt, bouton.monBouton(cacheListe, ft.icons.CLOSE)])
     ligneRecherche = ft.Row([saisieRecherche, boutonLanceRecherche], visible=False)
-    blocGestionFichier = ft.Column([ligneBoutonsFichier, ligneRecherche , liste])
+    blocGestionFichier = ft.Column([ligneBoutonsFichier, ligneRecherche , liste,boutonAjoutImage])
 
     # Conteneurs pour chaque section
     container_menu = ft.Container(width=60, content=bouton.monBouton(afficheListe, ft.icons.FOLDER), visible=False)

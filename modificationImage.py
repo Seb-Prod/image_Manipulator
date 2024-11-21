@@ -16,6 +16,8 @@ class ParamModif:
 
 def lanceLesModif(infoImage:liste_fichier.Image, lesModif:ParamModif) ->str:
         imgModifier = Image.open(os.path.join(infoImage.rep, infoImage.nom))
+        imgModifier = imgModifier.convert('RGB')
+        
         #Si noir et blanc
         if lesModif.nb:
                 imgModifier = imgModifier.convert("L")  # Convertir en niveaux de gris
@@ -37,6 +39,7 @@ def getTailleInitiale(infoImage:liste_fichier.Image) ->ParamModif:
 
 def saveModif(infoImage:liste_fichier.Image, lesModif:ParamModif):
         imgModifier = Image.open(os.path.join(infoImage.rep, infoImage.nom))
+        imgModifier = imgModifier.convert('RGB')
         #Si noir et blanc
         if lesModif.nb:
                 imgModifier = imgModifier.convert("L")  # Convertir en niveaux de gris
@@ -49,3 +52,8 @@ def saveModif(infoImage:liste_fichier.Image, lesModif:ParamModif):
         #Sauvegarde
         imgModifier.save(os.path.join(infoImage.rep, infoImage.nom))
         #imgModifier.save(os.path.join(infoImage.rep, infoImage.nom))
+
+def ajoutImage(lien:str, nom:str, destination:str ):
+        imgModifier = Image.open(lien)
+        imgModifier = imgModifier.convert('RGB')
+        imgModifier.save(os.path.join(destination, nom))
