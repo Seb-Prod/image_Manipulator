@@ -54,7 +54,9 @@ def main(page: ft.Page):
         print(saisieRecherche.value)
         print(infoImage.rep)
         liste.controls.clear()
-        for fichier in liste_fichier.lister_recherche(infoImage.rep, saisieRecherche.value):
+        fichiers = liste_fichier.lister_recherche(infoImage.rep, saisieRecherche.value)
+        fichiers_trie = sorted(fichiers, key=lambda f: f.nom.lower())  # Trie les fichiers par nom
+        for fichier in fichiers_trie:
             liste.controls.append(ft.TextButton(text=fichier.nom, on_click=cliqueListe, data=fichier))
         page.update()
         
@@ -216,7 +218,9 @@ def main(page: ft.Page):
     liste = ft.ListView(expand=1, spacing=10, padding=20)
 
     def chargeListe(rep: str):
-        for fichier in liste_fichier.lister_fichiers2(os.path.join(rep)):
+        fichiers = liste_fichier.lister_fichiers2(os.path.join(rep))
+        fichiers_trie = sorted(fichiers, key=lambda f: f.nom.lower())  # Trie les fichiers par nom, insensible à la casse
+        for fichier in fichiers_trie:
             liste.controls.append(ft.TextButton(text=fichier.nom, on_click=cliqueListe, data=fichier))
 
     # Cache le container gestion fichier
